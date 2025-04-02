@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using TerracoDaCida.DTO;
 using System.Text;
 using System.Text.Json;
-using Microsoft.ApplicationInsights.Extensibility;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 
@@ -118,8 +117,6 @@ app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Terraço da Cida");
 });
-
-app.MapHealthChecks("/healtz");
 
 app.UseExceptionHandler(new ExceptionHandlerOptions
 {
