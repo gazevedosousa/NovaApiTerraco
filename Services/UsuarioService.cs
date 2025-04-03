@@ -83,30 +83,12 @@ namespace TerracoDaCida.Services
 
         public async Task<bool> ExisteUsuarioDuplicado(string noUsuario)
         {
-            Usuario? usuario = await _usuarioRepository.BuscarUsuarioPorNome(noUsuario);
-
-            if(usuario == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return await _usuarioRepository.ExisteUsuarioDuplicado(noUsuario);
         }
 
         public async Task<bool> ExistePerfilSolicitado(short coPerfil)
         {
-            Perfil? perfil = await _usuarioRepository.BuscarPerfil(coPerfil);
-
-            if (perfil == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return await _usuarioRepository.ExistePerfilSolicitado(coPerfil);
         }
 
     }

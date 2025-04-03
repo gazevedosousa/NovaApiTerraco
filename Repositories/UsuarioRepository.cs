@@ -32,11 +32,18 @@ namespace TerracoDaCida.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Perfil?> BuscarPerfil(short coPerfil)
+        public async Task<bool> ExisteUsuarioDuplicado(string noUsuario)
+        {
+            return await _dbLeitura.Usuarios
+                .Where(u => u.NoUsuario == noUsuario)
+                .AnyAsync();
+        }
+
+        public async Task<bool> ExistePerfilSolicitado(short coPerfil)
         {
             return await _dbLeitura.Perfils
                 .Where(p => p.CoPerfil == coPerfil)
-                .FirstOrDefaultAsync();
+                .AnyAsync();
         }
 
         public async Task<bool> CriaUsuario(Usuario usuario)
