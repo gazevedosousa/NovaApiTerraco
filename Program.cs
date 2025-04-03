@@ -14,6 +14,7 @@ using TerracoDaCida.Identity;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TerracoDaCida.Swagger;
+using TerracoDaCida.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,9 +59,12 @@ builder.Services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHtt
 });
 
 //Serviços
+builder.Services.AddScoped<GlobalErrorHandlingMiddleware>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
 //Contexto de Banco de Dados
 builder.Services.AddDbContext<DbEscrita>(
@@ -122,6 +126,7 @@ app.UseSwaggerUI(options =>
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();

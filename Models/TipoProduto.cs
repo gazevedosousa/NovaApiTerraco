@@ -9,5 +9,9 @@ public partial class TipoProduto
 
     public string NoTipoProduto { get; set; } = null!;
 
+    public DateTime? DhCriacao { get; set; }
+
+    public DateTime? DhExclusao { get; set; }
+
     public virtual ICollection<Produto> Produtos { get; set; } = new List<Produto>();
 }

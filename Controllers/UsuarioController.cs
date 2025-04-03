@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerracoDaCida.DTO;
+using TerracoDaCida.Exceptions;
+using TerracoDaCida.Services;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsuarioController : ControllerBase
@@ -25,7 +27,15 @@ namespace TerracoDaCida.Controllers
         [Route("buscaUsuarios")]
         public async Task<ApiResponse<List<UsuarioDTO>>> BuscaUsuarios()
         {
-            return await _usuarioService.BuscaUsuarios();
+            try
+            {
+                return await _usuarioService.BuscaUsuarios();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
 
         [HttpPost]
@@ -34,17 +44,30 @@ namespace TerracoDaCida.Controllers
         {
             if(await _usuarioService.ExisteUsuarioDuplicado(criaUsuarioDTO.Usuario))
             {
-                return BadRequest("Usuário já existente");
+                throw new BadRequestException("Usuário já existente");
             }
 
             if(!await _usuarioService.ExistePerfilSolicitado(criaUsuarioDTO.Perfil))
             {
-                return BadRequest("Perfil não encontrado");
+                throw new NotFoundException("Perfil não encontrado");
             }
+            try
+            {
+                var retorno = await _usuarioService.CriaUsuario(criaUsuarioDTO);
 
-            var retorno = await _usuarioService.CriaUsuario(criaUsuarioDTO);
+                if (retorno.StatusCode != StatusCodes.Status201Created)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
 
-            return StatusCode(retorno.StatusCode, retorno);
+                Response.StatusCode = StatusCodes.Status201Created;
+                return Created();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
 
     }
