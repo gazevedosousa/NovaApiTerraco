@@ -102,6 +102,15 @@
             };
         }
 
+        public static ApiResponse<T> NoContent(T data)
+        {
+            return new ApiResponse<T>
+            {
+                StatusCode = StatusCodes.Status204NoContent,
+                Data = data
+            };
+        }
+
         public static ApiResponse<T> NoContent(T data, string errorMessage)
         {
             return new ApiResponse<T>

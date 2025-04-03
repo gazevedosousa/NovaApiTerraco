@@ -145,6 +145,8 @@ public abstract class DbContextBase<T> : DbContext
             entity.HasIndex(e => e.NoTipoProduto, "IX_TIPO_PRODUTO").IsUnique();
 
             entity.Property(e => e.CoTipoProduto).HasColumnName("CO_TIPO_PRODUTO");
+            entity.Property(e => e.DhCriacao).HasColumnName("DH_CRIACAO");
+            entity.Property(e => e.DhExclusao).HasColumnName("DH_EXCLUSAO");
             entity.Property(e => e.NoTipoProduto)
                 .HasMaxLength(100)
                 .IsUnicode(false)
