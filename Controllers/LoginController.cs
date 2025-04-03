@@ -4,6 +4,7 @@ using TerracoDaCida.DTO;
 using TerracoDaCida.Services;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
+using TerracoDaCida.Exceptions;
 
 namespace TerracoDaCida.Controllers
 {
@@ -26,26 +27,32 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> Login([FromBody] LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             var usuario = await _usuarioService.BuscaUsuarioParaLogin(loginDTO.Usuario);
 
             if(usuario == null)
             {
                 _logger.LogInformation("Usuário não encontrado");
-                return BadRequest("Usuário ou senha incorretos");
+                throw new BadRequestException("Usuário ou senha incorretos");
             }
 
             if(!_loginService.SenhaCorreta(loginDTO, usuario)) 
             {
                 _logger.LogInformation("Senha incorreta");
-                return BadRequest("Usuário ou senha incorretos");
+                throw new BadRequestException("Usuário ou senha incorretos");
             }
 
-            string jwt = _loginService.RealizaLogin(usuario);
-
-            _logger.LogInformation("Login realizado com sucesso");
-            return Ok(jwt);
+            try
+            {
+                string jwt = _loginService.RealizaLogin(usuario);
+                return Ok(jwt);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
 
     }

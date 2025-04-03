@@ -45,7 +45,7 @@ namespace TerracoDaCida.Configuration
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = status;
 
-            string exceptionResult = JsonSerializer.Serialize(new CustomResponse(status, false, exception.Message));
+            string exceptionResult = JsonSerializer.Serialize(new CustomResponse(status, exception.Message));
 
             await context.Response.WriteAsync(exceptionResult);
         }
