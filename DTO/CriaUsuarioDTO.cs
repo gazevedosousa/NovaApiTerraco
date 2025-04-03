@@ -7,7 +7,7 @@ namespace TerracoDaCida.DTO
         [JsonPropertyName("usuario")]
         public string Usuario { get; set; } = string.Empty;
         [JsonPropertyName("perfil")]
-        public short Perfil { get; set; }
+        public int Perfil { get; set; }
         [JsonPropertyName("senha")]
         public string Senha { get; set; } = string.Empty;
     }

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using TerracoDaCida.Configuration;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Models;
+using TerracoDaCida.Repositories;
 using TerracoDaCida.Repositories.Interfaces;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
@@ -12,11 +15,13 @@ namespace TerracoDaCida.Services
     {
         private readonly ILogger<UsuarioService> _logger;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IInfoTokenUser _infoTokenUser;
 
-        public UsuarioService(ILogger<UsuarioService> logger, IUsuarioRepository usuarioRepository)
+        public UsuarioService(ILogger<UsuarioService> logger, IUsuarioRepository usuarioRepository, IInfoTokenUser infoTokenUser)
         {
             _logger = logger;
             _usuarioRepository = usuarioRepository;
+            _infoTokenUser = infoTokenUser;
         }
         public async Task<ApiResponse<List<UsuarioDTO>>> BuscaUsuarios()
         {
@@ -69,7 +74,7 @@ namespace TerracoDaCida.Services
                 SenhaSalt = senhaSalt,
             };
 
-            if (await _usuarioRepository.CriaUsuario(usuario))
+            if (await _usuarioRepository.CriarUsuario(usuario))
             {
 
                 _logger.LogInformation($"Usuário criado com sucesso - {usuario.NoUsuario}");
@@ -81,14 +86,41 @@ namespace TerracoDaCida.Services
             }
         }
 
+        public async Task<ApiResponse<bool>> ExcluiUsuario(int coUsuario)
+        {
+            Usuario? usuario = await _usuarioRepository.BuscarUsuario(coUsuario);
+
+            if (usuario != null)
+            {
+                if (await _usuarioRepository.ExcluirUsuario(coUsuario))
+                {
+                    _logger.LogInformation($"Usuário excluído com sucesso - {usuario.NoUsuario}");
+                    return ApiResponse<bool>.NoContent(true);
+                }
+                else
+                {
+                    return ApiResponse<bool>.Error($"Erro ao excluir Usuário. coTipoProduto: {coUsuario}");
+                }
+            }
+            else
+            {
+                return ApiResponse<bool>.Error($"Usuário não existente. coTipoProduto: {coUsuario}");
+            }
+        }
+
         public async Task<bool> ExisteUsuarioDuplicado(string noUsuario)
         {
             return await _usuarioRepository.ExisteUsuarioDuplicado(noUsuario);
         }
 
-        public async Task<bool> ExistePerfilSolicitado(short coPerfil)
+        public async Task<bool> ExistePerfilSolicitado(int coPerfil)
         {
             return await _usuarioRepository.ExistePerfilSolicitado(coPerfil);
+        }
+
+        public bool UsuarioSolicitanteIgualAoDeletado(int coUsuario)
+        {
+            return _infoTokenUser.CoUsuario == coUsuario;
         }
 
     }

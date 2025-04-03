@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using TerracoDaCida.Exceptions;
 using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Identity
@@ -19,7 +20,7 @@ namespace TerracoDaCida.Identity
         {
             if (!filterContext.HttpContext.User.HasClaim(_claimName, _claimValue))
             {
-                throw new Exception("Usuário sem permissão para realizar essa ação");
+                throw new ForbiddenException("Usuário sem permissão para realizar essa ação");
             }
         }
     }

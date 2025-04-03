@@ -57,7 +57,8 @@ namespace TerracoDaCida.Services
             {
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new (JwtRegisteredClaimNames.Sub, usuario.NoUsuario),
-                new ("idUsuario", usuario.NoUsuario),
+                new ("coUsuario", usuario.CoUsuario.ToString()), 
+                new ("noUsuario", usuario.NoUsuario),
                 new ("admin", checkAdmin)
             };
 

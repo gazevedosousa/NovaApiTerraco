@@ -27,7 +27,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        public async Task<ActionResult<string>> Login([FromBody] LoginDTO loginDTO)
         {
             var usuario = await _usuarioService.BuscaUsuarioParaLogin(loginDTO.Usuario);
 

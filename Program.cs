@@ -59,7 +59,9 @@ builder.Services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHtt
 });
 
 //Serviços
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<GlobalErrorHandlingMiddleware>();
+builder.Services.AddScoped<IInfoTokenUser, InfoTokenUser>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ILoginService, LoginService>();

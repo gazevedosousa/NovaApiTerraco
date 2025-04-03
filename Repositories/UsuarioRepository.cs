@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Models;
 using TerracoDaCida.Repositories.Interfaces;
+using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Repositories
 {
@@ -24,6 +25,14 @@ namespace TerracoDaCida.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Usuario?> BuscarUsuario(int coUsuario)
+        {
+            return await _dbLeitura.Usuarios
+                .Include(u => u.CoPerfilNavigation)
+                .Where(u => u.CoUsuario == coUsuario)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Usuario?> BuscarUsuarioPorNome(string noUsuario)
         {
             return await _dbLeitura.Usuarios
@@ -39,17 +48,26 @@ namespace TerracoDaCida.Repositories
                 .AnyAsync();
         }
 
-        public async Task<bool> ExistePerfilSolicitado(short coPerfil)
+        public async Task<bool> ExistePerfilSolicitado(int coPerfil)
         {
             return await _dbLeitura.Perfils
                 .Where(p => p.CoPerfil == coPerfil)
                 .AnyAsync();
         }
 
-        public async Task<bool> CriaUsuario(Usuario usuario)
+        public async Task<bool> CriarUsuario(Usuario usuario)
         {
             await _dbEscrita.AddAsync(usuario);
             return await SaveChangesAsync();
+        }
+
+        public async Task<bool> ExcluirUsuario(int coUsuario)
+        {
+            await _dbEscrita.Usuarios
+                .Where(p => p.CoUsuario == coUsuario)
+                .ExecuteDeleteAsync();
+
+            return true;
         }
 
         public async Task<bool> SaveChangesAsync()
