@@ -176,5 +176,17 @@ namespace TerracoDaCida.Services
             }
         }
 
+        public bool ValorSuperiorAZero(decimal vrProduto)
+        {
+            if (vrProduto <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
     }
 }

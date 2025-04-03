@@ -16,5 +16,6 @@ namespace TerracoDaCida.Services.Interfaces
         Task<bool> ExisteProdutoDuplicado(string noProduto);
         Task<bool> ExisteTipoProduto(int coTipoProduto);
         Task<bool> ExisteTipoProdutoDuplicado(string noTipoProduto);
+        bool ValorSuperiorAZero(decimal vrProduto);
     }
 }

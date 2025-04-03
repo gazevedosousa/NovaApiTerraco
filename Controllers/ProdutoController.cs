@@ -54,6 +54,11 @@ namespace TerracoDaCida.Controllers
                 throw new NotFoundException("Tipo de Produto não existente");
             }
 
+            if(!_produtoService.ValorSuperiorAZero(criaProdutoDTO.ValorProduto))
+            {
+                throw new BadRequestException("Valor do produto deve ser superior a R$0,00");
+            }
+
             try
             {
                 var retorno = await _produtoService.CriaProduto(criaProdutoDTO);
