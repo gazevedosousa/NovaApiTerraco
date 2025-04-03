@@ -1,14 +1,16 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Exceptions;
+using TerracoDaCida.Identity;
 using TerracoDaCida.Services;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsuarioController : ControllerBase
@@ -39,6 +41,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaUsuario")]
         public async Task<IActionResult> CriaUsuario([FromBody] CriaUsuarioDTO criaUsuarioDTO)
         {
@@ -68,6 +71,36 @@ namespace TerracoDaCida.Controllers
                 _logger.LogError(ex.Message, ex);
                 throw;
             }
+        }
+
+        [HttpDelete]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [Route("excluiUsuario")]
+        public async Task<IActionResult> ExcluiUsuario(int coUsuario)
+        {
+            if(_usuarioService.UsuarioSolicitanteIgualAoDeletado(coUsuario))
+            {
+                throw new BadRequestException("Erro ao deletar Usuario. Não é possível deletar o próprio Usuário");
+            }
+
+            try
+            {
+                var retorno = await _usuarioService.ExcluiUsuario(coUsuario);
+
+                if (retorno.StatusCode != StatusCodes.Status204NoContent)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status204NoContent;
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+
         }
 
     }
