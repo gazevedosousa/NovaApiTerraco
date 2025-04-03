@@ -1,9 +1,14 @@
-﻿namespace TerracoDaCida.Util
+﻿using System.Text.Json.Serialization;
+
+namespace TerracoDaCida.Util
 {
     public class ApiResponse<T>
     {
+        [JsonPropertyName("StatusCode")]
         public int StatusCode { get; set; }
+        [JsonPropertyName("data")]
         public T? Data { get; set; } = default(T?);
+        [JsonPropertyName("errorMessage")]
         public string? ErrorMessage { get; set; }
 
         public static ApiResponse<T> Error(string errorMessage, int statusCode = StatusCodes.Status400BadRequest)

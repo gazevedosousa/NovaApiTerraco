@@ -2,15 +2,13 @@
 {
     public class CustomResponse
     {
-        public CustomResponse(int statusCode, bool data, string message)
+        public CustomResponse(int statusCode, string message)
         {
-            statusCode = statusCode;
-            data = data;
+            StatusCode = statusCode;
             errorMessage = message;
         }
 
-        public int statusCode { get; set; }
-        public bool data { get; set; }
+        public int StatusCode { get; set; }
         public string errorMessage { get; set; }
     }
 }
