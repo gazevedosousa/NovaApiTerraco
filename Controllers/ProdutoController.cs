@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Exceptions;
+using TerracoDaCida.Models;
 using TerracoDaCida.Services;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
@@ -70,6 +71,35 @@ namespace TerracoDaCida.Controllers
 
                 Response.StatusCode = StatusCodes.Status201Created;
                 return Created();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+
+        }
+
+        [HttpPatch]
+        [Route("editaValorProduto")]
+        public async Task<IActionResult> EditaValorProduto([FromBody] EditaProdutoDTO editaProdutoDTO)
+        {
+            if (!_produtoService.ValorSuperiorAZero(editaProdutoDTO.ValorProduto))
+            {
+                throw new BadRequestException("Novo valor do produto deve ser superior a R$0,00");
+            }
+
+            try
+            {
+                var retorno = await _produtoService.EditaProduto(editaProdutoDTO.Codigo, editaProdutoDTO.ValorProduto);
+
+                if (retorno.StatusCode != StatusCodes.Status200OK)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status200OK;
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -152,6 +182,11 @@ namespace TerracoDaCida.Controllers
         [Route("excluiTipoProduto")]
         public async Task<IActionResult> ExcluiTipoProduto(int coTipoProduto)
         {
+            if(await _produtoService.ExisteTipoProdutoVinculadoAtivo(coTipoProduto))
+            {
+                throw new BadRequestException("Erro ao excluir Tipo Produto. Existe produto ativo vinculado ao tipo");
+            }
+
             try
             {
                 var retorno = await _produtoService.ExcluiTipoProduto(coTipoProduto);

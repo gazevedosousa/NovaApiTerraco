@@ -49,7 +49,7 @@ namespace TerracoDaCida.Controllers
 
             if(!await _usuarioService.ExistePerfilSolicitado(criaUsuarioDTO.Perfil))
             {
-                throw new NotFoundException("Perfil não encontrado");
+                throw new NotFoundException("Perfil não existente");
             }
             try
             {

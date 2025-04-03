@@ -36,6 +36,12 @@ namespace TerracoDaCida.Services
             return ApiResponse<List<ProdutoDTO>>.SuccessOk(listaProdutos);
         }
 
+        public async Task<Produto?> BuscaProduto(int coProduto)
+        {
+
+            return await _produtoRepository.BuscarProduto(coProduto);
+
+        }
         public async Task<ApiResponse<bool>> CriaProduto(CriaProdutoDTO criaProdutoDTO)
         {
             Produto produto = new Produto
@@ -55,6 +61,29 @@ namespace TerracoDaCida.Services
             {
                 return ApiResponse<bool>.Error($"Erro ao criar Produto. DTO de entrada: {criaProdutoDTO.ToJson()}");
             }
+        }
+
+        public async Task<ApiResponse<bool>> EditaProduto(int coProduto, decimal novoVrProduto)
+        {
+            Produto? produto = await _produtoRepository.BuscarProduto(coProduto);
+
+            if (produto != null)
+            {
+                if (await _produtoRepository.EditarProduto(coProduto, novoVrProduto))
+                {
+                    _logger.LogInformation($"Produto editado com sucesso - {produto.NoProduto}");
+                    return ApiResponse<bool>.SuccessOk(true);
+                }
+                else
+                {
+                    return ApiResponse<bool>.Error($"Erro ao editar Produto. coProduto: {coProduto}");
+                }
+            }
+            else
+            {
+                return ApiResponse<bool>.Error($"Produto não existente. coProduto: {coProduto}");
+            }
+
         }
 
         public async Task<ApiResponse<bool>> ExcluiProduto(int coProduto)
@@ -136,44 +165,22 @@ namespace TerracoDaCida.Services
 
         public async Task<bool> ExisteProdutoDuplicado(string noProduto)
         {
-            Produto? produto = await _produtoRepository.BuscarProdutoPorNome(noProduto);
-
-            if (produto == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return await _produtoRepository.ExisteProdutoDuplicado(noProduto);
         }
 
         public async Task<bool> ExisteTipoProduto(int coTipoProduto)
         {
-            TipoProduto? tipoProduto = await _produtoRepository.BuscarTipoProduto(coTipoProduto);
-
-            if (tipoProduto == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return await _produtoRepository.ExisteTipoProduto(coTipoProduto);
         }
 
         public async Task<bool> ExisteTipoProdutoDuplicado(string noTipoProduto)
         {
-            TipoProduto? tipoProduto = await _produtoRepository.BuscarTipoProdutoPorNome(noTipoProduto);
+            return await _produtoRepository.ExisteTipoProdutoDuplicado(noTipoProduto);
+        }
 
-            if (tipoProduto == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+        public async Task<bool> ExisteTipoProdutoVinculadoAtivo(int coTipoProduto)
+        {
+            return await _produtoRepository.ExisteVinculoTipoProduto(coTipoProduto);
         }
 
         public bool ValorSuperiorAZero(decimal vrProduto)
