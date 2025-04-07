@@ -74,7 +74,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpDelete]
-        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("excluiUsuario")]
         public async Task<IActionResult> ExcluiUsuario(int coUsuario)
         {
