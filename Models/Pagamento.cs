@@ -11,9 +11,11 @@ public partial class Pagamento
 
     public decimal VrPagamento { get; set; }
 
-    public int CoTipoPagamento { get; set; }
+    public decimal? VrDesconto { get; set; }
 
-    public DateTime? DhCriacao { get; set; }
+    public decimal? VrTroco { get; set; }
+
+    public DateTime DhCriacao { get; set; }
 
     public virtual Comandum CoComandaNavigation { get; set; } = null!;
 }

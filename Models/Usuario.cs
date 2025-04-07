@@ -11,9 +11,9 @@ public partial class Usuario
 
     public string NoUsuario { get; set; } = null!;
 
-    public byte[] SenhaHash { get; set; } = null!;
+    public byte[] Senhahash { get; set; } = null!;
 
-    public byte[] SenhaSalt { get; set; } = null!;
+    public byte[] Senhasalt { get; set; } = null!;
 
     public virtual Perfil CoPerfilNavigation { get; set; } = null!;
 }

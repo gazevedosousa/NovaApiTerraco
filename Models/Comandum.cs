@@ -11,9 +11,9 @@ public partial class Comandum
 
     public string NoComanda { get; set; } = null!;
 
-    public DateTime? DhCriacao { get; set; }
+    public DateTime? DhAbertura { get; set; }
 
-    public DateTime? DhExclusao { get; set; }
+    public DateTime? DhFechamento { get; set; }
 
     public virtual ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
 

@@ -34,7 +34,7 @@ namespace TerracoDaCida.Services
 
         public bool SenhaCorreta(LoginDTO loginDTO, Usuario usuario)
         {
-            if (!HashUtil.VerificaSenhaHash(loginDTO.Senha, usuario.SenhaHash, usuario.SenhaSalt))
+            if (!HashUtil.VerificaSenhaHash(loginDTO.Senha, usuario.Senhahash, usuario.Senhasalt))
             {
                 return false;
             }

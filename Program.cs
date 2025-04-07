@@ -72,14 +72,14 @@ builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddDbContext<DbEscrita>(
     options =>
     {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("Escrita"),
+        options.UseNpgsql(builder.Configuration.GetConnectionString("Escrita"),
             providerOptions => providerOptions.EnableRetryOnFailure());
     });
 
 builder.Services.AddDbContext<DbLeitura>(
     options =>
     {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("Leitura"),
+        options.UseNpgsql(builder.Configuration.GetConnectionString("Leitura"),
             providerOptions => providerOptions.EnableRetryOnFailure()).EnableSensitiveDataLogging();
     });
 
