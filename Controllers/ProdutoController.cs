@@ -15,10 +15,10 @@ namespace TerracoDaCida.Controllers
     [Route("api/[controller]")]
     public class ProdutoController : ControllerBase
     {
-        private readonly ILogger<UsuarioController> _logger;
+        private readonly ILogger<ProdutoController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IProdutoService _produtoService;
-        public ProdutoController(ILogger<UsuarioController> logger, IConfiguration configuration, IProdutoService produtoService) 
+        public ProdutoController(ILogger<ProdutoController> logger, IConfiguration configuration, IProdutoService produtoService) 
         {
             _logger = logger;
             _configuration = configuration;
