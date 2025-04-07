@@ -10,7 +10,7 @@ using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsuarioController : ControllerBase
@@ -41,7 +41,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaUsuario")]
         public async Task<IActionResult> CriaUsuario([FromBody] CriaUsuarioDTO criaUsuarioDTO)
         {

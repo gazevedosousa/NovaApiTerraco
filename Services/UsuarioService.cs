@@ -70,8 +70,8 @@ namespace TerracoDaCida.Services
             {
                 NoUsuario = criaUsuarioDTO.Usuario,
                 CoPerfil = criaUsuarioDTO.Perfil,
-                SenhaHash = senhaHash,
-                SenhaSalt = senhaSalt,
+                Senhahash = senhaHash,
+                Senhasalt = senhaSalt,
             };
 
             if (await _usuarioRepository.CriarUsuario(usuario))
