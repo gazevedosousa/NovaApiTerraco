@@ -63,11 +63,9 @@ namespace TerracoDaCida.Repositories
 
         public async Task<bool> ExcluirUsuario(int coUsuario)
         {
-            await _dbEscrita.Usuarios
+            return await _dbEscrita.Usuarios
                 .Where(p => p.CoUsuario == coUsuario)
-                .ExecuteDeleteAsync();
-
-            return true;
+                .ExecuteDeleteAsync() == 1;
         }
 
         public async Task<bool> SaveChangesAsync()

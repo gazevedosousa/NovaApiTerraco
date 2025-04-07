@@ -66,7 +66,11 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
-builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>(); 
+builder.Services.AddScoped<IComandaService, ComandaService>();
+builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
+builder.Services.AddScoped<ICouvertService, CouvertService>();
+builder.Services.AddScoped<ICouvertRepository, CouvertRepository>();
 
 //Contexto de Banco de Dados
 builder.Services.AddDbContext<DbEscrita>(

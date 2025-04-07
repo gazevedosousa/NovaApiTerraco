@@ -13,6 +13,8 @@ public partial class Lancamento
 
     public int QtdLancamento { get; set; }
 
+    public decimal VrLancamento { get; set; }
+
     public DateTime DhCriacao { get; set; }
 
     public virtual Comandum CoComandaNavigation { get; set; } = null!;

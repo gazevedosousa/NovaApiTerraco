@@ -34,22 +34,19 @@ namespace TerracoDaCida.Repositories
 
         public async Task<bool> EditarProduto(int coProduto, decimal vrProduto)
         {
-            await _dbEscrita.Produtos
+            return await _dbEscrita.Produtos
                .Where(p => p.CoProduto == coProduto)
                .ExecuteUpdateAsync(up => up
-                   .SetProperty(p => p.VrProduto, vrProduto));
-
-            return true;
+                   .SetProperty(p => p.VrProduto, vrProduto)) == 1;
         }
 
         public async Task<bool> ExcluirProduto(int coProduto)
         {
-            await _dbEscrita.Produtos
+            return await _dbEscrita.Produtos
                 .Where(p => p.CoProduto == coProduto)
                 .ExecuteUpdateAsync(up => up
-                    .SetProperty(p => p.DhExclusao, new DateTime().GetDataAtual()));
+                    .SetProperty(p => p.DhExclusao, new DateTime().GetDataAtual())) == 1;
 
-            return true;
         }
 
         public async Task<Produto?> BuscarProduto(int coProduto)
@@ -119,12 +116,10 @@ namespace TerracoDaCida.Repositories
 
         public async Task<bool> ExcluirTipoProduto(int coTipoProduto)
         {
-            await _dbEscrita.TipoProdutos
+            return await _dbEscrita.TipoProdutos
                 .Where(p => p.CoTipoProduto == coTipoProduto)
                 .ExecuteUpdateAsync(up => up
-                    .SetProperty(p => p.DhExclusao, new DateTime().GetDataAtual()));
-
-            return true;
+                    .SetProperty(p => p.DhExclusao, new DateTime().GetDataAtual())) == 1;
         }
 
 

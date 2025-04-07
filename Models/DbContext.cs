@@ -24,6 +24,8 @@ public abstract class DbContextBase<T> : DbContext
 
     public virtual DbSet<Comandum> Comanda { get; set; }
 
+    public virtual DbSet<Couvert> Couverts { get; set; }
+
     public virtual DbSet<Lancamento> Lancamentos { get; set; }
 
     public virtual DbSet<Pagamento> Pagamentos { get; set; }
@@ -49,15 +51,30 @@ public abstract class DbContextBase<T> : DbContext
 
             entity.Property(e => e.CoComanda).HasColumnName("co_comanda");
             entity.Property(e => e.CoSituacao).HasColumnName("co_situacao");
-            entity.Property(e => e.DhAbertura)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("dh_abertura");
             entity.Property(e => e.DhFechamento)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("dh_fechamento");
+            entity.Property(e => e.DhAbertura)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("dh_abertura");
             entity.Property(e => e.NoComanda)
                 .HasColumnType("character varying")
                 .HasColumnName("no_comanda");
+            entity.Property(e => e.Temcouvert).HasColumnName("temcouvert");
+            entity.Property(e => e.Temdezporcento).HasColumnName("temdezporcento");
+            entity.Property(e => e.Valordesconto).HasColumnName("valordesconto");
+            entity.Property(e => e.Valortroco).HasColumnName("valortroco");
+        });
+
+        modelBuilder.Entity<Couvert>(entity =>
+        {
+            entity.HasKey(e => e.CoCouvert).HasName("couvert_pk");
+
+            entity.ToTable("couvert", "dbo");
+
+            entity.Property(e => e.CoCouvert).HasColumnName("co_couvert");
+            entity.Property(e => e.IsAtivo).HasColumnName("is_ativo");
+            entity.Property(e => e.VrCouvert).HasColumnName("vr_couvert");
         });
 
         modelBuilder.Entity<Lancamento>(entity =>
@@ -73,6 +90,7 @@ public abstract class DbContextBase<T> : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("dh_criacao");
             entity.Property(e => e.QtdLancamento).HasColumnName("qtd_lancamento");
+            entity.Property(e => e.VrLancamento).HasColumnName("vr_lancamento");
 
             entity.HasOne(d => d.CoComandaNavigation).WithMany(p => p.Lancamentos)
                 .HasForeignKey(d => d.CoComanda)
@@ -93,12 +111,11 @@ public abstract class DbContextBase<T> : DbContext
 
             entity.Property(e => e.CoPagamento).HasColumnName("co_pagamento");
             entity.Property(e => e.CoComanda).HasColumnName("co_comanda");
+            entity.Property(e => e.CoTipoPagamento).HasColumnName("co_tipo_pagamento");
             entity.Property(e => e.DhCriacao)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("dh_criacao");
-            entity.Property(e => e.VrDesconto).HasColumnName("vr_desconto");
             entity.Property(e => e.VrPagamento).HasColumnName("vr_pagamento");
-            entity.Property(e => e.VrTroco).HasColumnName("vr_troco");
 
             entity.HasOne(d => d.CoComandaNavigation).WithMany(p => p.Pagamentos)
                 .HasForeignKey(d => d.CoComanda)

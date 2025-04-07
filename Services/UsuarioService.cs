@@ -30,6 +30,7 @@ namespace TerracoDaCida.Services
 
             List<UsuarioDTO> listaUsuarios = usuarios.Select(u => new UsuarioDTO()
             {
+                Codigo = u.CoUsuario,
                 Usuario = u.NoUsuario,
                 Perfil = u.CoPerfilNavigation.NoPerfil
             }).ToList();
