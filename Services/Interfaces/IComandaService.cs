@@ -11,7 +11,12 @@ namespace TerracoDaCida.Services.Interfaces
         Task<ApiResponse<bool>> AbreComanda(AbreComandaDTO abreComandaDTO);
         Task<ApiResponse<DetalhaComandaDTO>> DetalhaComanda(int coComanda);
         Task<ApiResponse<bool>> AlteraComanda(AlteraComandaDTO alteraComandaDTO);
+        Task<decimal> BuscaValorTotalComanda(int coComanda);
+        Task<ApiResponse<bool>> FechaComanda(int coComanda);
+        Task<ApiResponse<bool>> ReabreComanda(int coComanda);
         Task<bool> ExisteComanda(int coComanda);
+        Task<bool> ComandaJaPaga(int coComanda);
+        Task<bool> ComandaPodeSerFechada(int coComanda);
         Task<bool> ExisteComandaAbertaParaNomeInformado(string noComanda);
         bool TemCouvertSemQuantidade(AbreComandaDTO abreComandaDTO);
         Task<bool> TemCouvertSemQuantidade(AlteraComandaDTO alteraComandaDTO);

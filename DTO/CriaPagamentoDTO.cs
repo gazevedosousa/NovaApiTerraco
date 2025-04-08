@@ -3,18 +3,14 @@ using TerracoDaCida.Enums;
 
 namespace TerracoDaCida.DTO
 {
-    public class PagamentoDTO
+    public class CriaPagamentoDTO
     {
-        [JsonPropertyName("codigo")]
-        public int Codigo { get; set; }
         [JsonPropertyName("comanda")]
         public int Comanda { get; set; }
         [JsonPropertyName("valorPagamento")]
         public decimal ValorPagamento { get; set; }
         [JsonPropertyName("tipoPagamento")]
-        public TipoPagamentoEnum TipoPagamento { get; set; }
-        [JsonPropertyName("dtPagamento")]
-        public DateOnly DataPagamento { get; set; }
+        public int TipoPagamento { get; set; }
 
     }
 }
