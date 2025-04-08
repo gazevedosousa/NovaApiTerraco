@@ -13,32 +13,31 @@ namespace TerracoDaCida.Controllers
     //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class LancamentoController : ControllerBase
+    public class PagamentoController : ControllerBase
     {
-        private readonly ILogger<LancamentoController> _logger;
+        private readonly ILogger<PagamentoController> _logger;
         private readonly IConfiguration _configuration;
-        private readonly ILancamentoService _lancamentoService;
+        private readonly IPagamentoService _pagamentoService;
         private readonly IComandaService _comandaService;
         private readonly IProdutoService _produtoService;
-        public LancamentoController(
-            ILogger<LancamentoController> logger, IConfiguration configuration,
-            ILancamentoService lancamentoService, IComandaService comandaService, IProdutoService produtoService)
+        public PagamentoController(
+            ILogger<PagamentoController> logger, IConfiguration configuration,
+            IPagamentoService pagamentoService, IComandaService comandaService, IProdutoService produtoService)
         {
             _logger = logger;
             _configuration = configuration;
-            _lancamentoService = lancamentoService;
-            _lancamentoService = lancamentoService;
+            _pagamentoService = pagamentoService;
             _comandaService = comandaService;
             _produtoService = produtoService;
         }
 
         [HttpGet]
-        [Route("buscaLancamentosComanda")]
-        public async Task<ApiResponse<List<LancamentoDTO>>> BuscaLancamentosComanda(int coComanda)
+        [Route("buscaPagamentosComanda")]
+        public async Task<ApiResponse<List<PagamentoDTO>>> BuscaPagamentosComanda(int coComanda)
         {
             try
             {
-                return await _lancamentoService.BuscaLancamentosComanda(coComanda);
+                return await _pagamentoService.BuscaPagamentosComanda(coComanda);
 
             }
             catch (Exception ex)
@@ -49,12 +48,12 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpGet]
-        [Route("buscaLancamentosDia")]
-        public async Task<ApiResponse<List<LancamentoDTO>>> BuscaLancamentosDia(DateOnly dtLancamento)
+        [Route("buscaPagamentosDia")]
+        public async Task<ApiResponse<List<PagamentoDTO>>> BuscaPagamentosDia(DateOnly dtPagamento)
         {
             try
             {
-                return await _lancamentoService.BuscaLancamentosDia(dtLancamento);
+                return await _pagamentoService.BuscaPagamentosDia(dtPagamento);
 
             }
             catch (Exception ex)
@@ -65,12 +64,12 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpGet]
-        [Route("buscaLancamentosPeriodo")]
-        public async Task<ApiResponse<List<LancamentoDTO>>> BuscaLancamentosPeriodo(DateOnly dtInicial, DateOnly dtFinal)
+        [Route("buscaPagamentosPeriodo")]
+        public async Task<ApiResponse<List<PagamentoDTO>>> BuscaPagamentosPeriodo(DateOnly dtInicial, DateOnly dtFinal)
         {
             try
             {
-                return await _lancamentoService.BuscaLancamentosPeriodo(dtInicial, dtFinal);
+                return await _pagamentoService.BuscaPagamentosPeriodo(dtInicial, dtFinal);
 
             }
             catch (Exception ex)
@@ -81,37 +80,37 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        [Route("criaLancamento")]
-        public async Task<IActionResult> CriaLancamento([FromBody] CriaLancamentoDTO criaLancamentoDTO)
+        [Route("criaPagamento")]
+        public async Task<IActionResult> CriaPagamento([FromBody] CriaPagamentoDTO criaPagamentoDTO)
         {
-            if (!await _comandaService.ExisteComanda(criaLancamentoDTO.Comanda))
+            if (!await _comandaService.ExisteComanda(criaPagamentoDTO.Comanda))
             {
                 throw new NotFoundException("Comanda não existente");
             }
 
-            if (await _comandaService.ComandaJaPaga(criaLancamentoDTO.Comanda))
+            if (await _comandaService.ComandaJaPaga(criaPagamentoDTO.Comanda))
             {
                 throw new BadRequestException("Comanda está paga");
             }
 
-            if (!await _produtoService.ExisteProduto(criaLancamentoDTO.Produto))
+            if (!_pagamentoService.ValorSuperiorAZero(criaPagamentoDTO.ValorPagamento))
             {
-                throw new NotFoundException("Produto não existente");
+                throw new BadRequestException("Valor do Pagamento deve ser superior a R$0,00");
             }
 
-            if (_lancamentoService.QtdZerada(criaLancamentoDTO.Quantidade))
+            if (!_pagamentoService.ExisteTipoPagamento(criaPagamentoDTO.TipoPagamento))
             {
-                throw new BadRequestException("Quantidade do lançamento deve ser superior a 0");
+                throw new NotFoundException("Tipo de Pagamento informado não existente");
             }
 
-            if (!criaLancamentoDTO.IsAcrescimo && !await _lancamentoService.ExistePossibilidadeDeDiminuir(criaLancamentoDTO))
+            if (!await _pagamentoService.ExistePossibilidadeDePagamento(criaPagamentoDTO))
             {
-                throw new BadRequestException("Não é possível realizar o lançamento negativo solicitado. Verifique quantidade e valor");
+                throw new BadRequestException("Valor do Pagamento superior ao total da comanda");
             }
 
             try
             {
-                var retorno = await _lancamentoService.CriaLancamento(criaLancamentoDTO);
+                var retorno = await _pagamentoService.CriaPagamento(criaPagamentoDTO);
 
                 if (retorno.StatusCode != StatusCodes.Status200OK)
                 {
@@ -129,17 +128,17 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpDelete]
-        [Route("excluiLancamento")]
-        public async Task<IActionResult> ExcluiLancamento(int coLancamento)
+        [Route("excluiPagamento")]
+        public async Task<IActionResult> ExcluiPagamento(int coPagamento)
         {
-            if (!await _lancamentoService.ExisteLancamento(coLancamento))
+            if (!await _pagamentoService.ExistePagamento(coPagamento))
             {
                 throw new NotFoundException("Lançamento não existente");
             }
 
             try
             {
-                var retorno = await _lancamentoService.ExcluiLancamento(coLancamento);
+                var retorno = await _pagamentoService.ExcluiPagamento(coPagamento);
 
                 if (retorno.StatusCode != StatusCodes.Status204NoContent)
                 {

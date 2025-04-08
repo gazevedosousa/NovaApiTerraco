@@ -105,6 +105,11 @@ namespace TerracoDaCida.Controllers
                 throw new NotFoundException("Comanda não existente");
             }
 
+            if (await _comandaService.ComandaJaPaga(alteraComandaDTO.Codigo))
+            {
+                throw new BadRequestException("Comanda está paga");
+            }
+
             if (await _comandaService.TemCouvertSemQuantidade(alteraComandaDTO))
             {
                 throw new BadRequestException("Quantidade de Couverts deve ser superior a 0");
@@ -128,6 +133,77 @@ namespace TerracoDaCida.Controllers
                 throw;
             }
 
+        }
+
+        [HttpPost]
+        [Route("fechaComanda")]
+        public async Task<IActionResult> FechaComanda(int coComanda)
+        {
+            if (!await _comandaService.ExisteComanda(coComanda))
+            {
+                throw new NotFoundException("Comanda não existente");
+            }
+
+            if (await _comandaService.ComandaJaPaga(coComanda))
+            {
+                throw new BadRequestException("Comanda já está paga");
+            }
+
+            if (!await _comandaService.ComandaPodeSerFechada(coComanda))
+            {
+                throw new BadRequestException("Comanda com valores pendentes");
+            }
+
+            try
+            {
+                var retorno = await _comandaService.FechaComanda(coComanda);
+
+                if (retorno.StatusCode != StatusCodes.Status200OK)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status200OK;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+        }
+
+        [HttpPost]
+        [Route("reabreComanda")]
+        public async Task<IActionResult> ReabreComanda(int coComanda)
+        {
+            if (!await _comandaService.ExisteComanda(coComanda))
+            {
+                throw new NotFoundException("Comanda não existente");
+            }
+
+            if (!await _comandaService.ComandaJaPaga(coComanda))
+            {
+                throw new BadRequestException("Comanda já está aberta");
+            }
+
+            try
+            {
+                var retorno = await _comandaService.ReabreComanda(coComanda);
+
+                if (retorno.StatusCode != StatusCodes.Status200OK)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status200OK;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
     }
 }

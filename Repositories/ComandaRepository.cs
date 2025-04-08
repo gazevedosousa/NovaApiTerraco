@@ -96,10 +96,36 @@ namespace TerracoDaCida.Repositories
             return true;
         }
 
+        public async Task<bool> FecharComanda(int coComanda)
+        {
+            return await _dbLeitura.Comanda
+                .Where(c => c.CoComanda == coComanda)
+                .ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.CoSituacao, 2)
+                   .SetProperty(c => c.DhFechamento, new DateTime().GetDataAtual())) == 1;
+        }
+
+        public async Task<bool> ReabrirComanda(int coComanda)
+        {
+            return await _dbLeitura.Comanda
+                .Where(c => c.CoComanda == coComanda)
+                .ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.CoSituacao, 1)
+                   .SetProperty(c => c.DhFechamento, (DateTime?)null)) == 1;
+        }
+
         public async Task<bool> ExisteComanda(int coComanda)
         {
             return await _dbLeitura.Comanda
                 .Where(c => c.CoComanda == coComanda)
+                .AnyAsync();
+        }
+
+        public async Task<bool> ComandaJaPaga(int coComanda)
+        {
+            return await _dbLeitura.Comanda
+                .Where(c => c.CoComanda == coComanda)
+                .Where(c => c.CoSituacao == 2)
                 .AnyAsync();
         }
 

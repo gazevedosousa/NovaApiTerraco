@@ -3,6 +3,6 @@
     public enum SituacaoComandaEnum
     {
         Aberta = 1,
-        Paga = 2
+        Fechada = 2
     }
 }

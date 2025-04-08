@@ -73,6 +73,8 @@ builder.Services.AddScoped<ICouvertService, CouvertService>();
 builder.Services.AddScoped<ICouvertRepository, CouvertRepository>();
 builder.Services.AddScoped<ILancamentoService, LancamentoService>();
 builder.Services.AddScoped<ILancamentoRepository, LancamentoRepository>();
+builder.Services.AddScoped<IPagamentoService, PagamentoService>();
+builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
 
 //Contexto de Banco de Dados
 builder.Services.AddDbContext<DbEscrita>(
