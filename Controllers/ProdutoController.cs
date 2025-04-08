@@ -42,6 +42,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaProduto")]
         public async Task<IActionResult> CriaProduto([FromBody] CriaProdutoDTO criaProdutoDTO)
         {
@@ -81,12 +82,18 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPatch]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("editaValorProduto")]
         public async Task<IActionResult> EditaValorProduto([FromBody] EditaProdutoDTO editaProdutoDTO)
         {
             if (!_produtoService.ValorSuperiorAZero(editaProdutoDTO.ValorProduto))
             {
                 throw new BadRequestException("Novo valor do produto deve ser superior a R$0,00");
+            }
+
+            if (!await _produtoService.ExisteProduto(editaProdutoDTO.Codigo))
+            {
+                throw new NotFoundException("Produto não existente");
             }
 
             try
@@ -110,9 +117,15 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpDelete]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("excluiProduto")]
         public async Task<IActionResult> ExcluiProduto(int coProduto)
         {
+            if (!await _produtoService.ExisteProduto(coProduto))
+            {
+                throw new NotFoundException("Produto não existente");
+            }
+
             try
             {
                 var retorno = await _produtoService.ExcluiProduto(coProduto);
@@ -150,6 +163,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaTipoProduto")]
         public async Task<IActionResult> CriaTipoProduto([FromBody] CriaTipoProdutoDTO criaTipoProdutoDTO)
         {
@@ -179,12 +193,18 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpDelete]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("excluiTipoProduto")]
         public async Task<IActionResult> ExcluiTipoProduto(int coTipoProduto)
         {
             if(await _produtoService.ExisteTipoProdutoVinculadoAtivo(coTipoProduto))
             {
                 throw new BadRequestException("Erro ao excluir Tipo Produto. Existe produto ativo vinculado ao tipo");
+            }
+
+            if (!await _produtoService.ExisteTipoProduto(coTipoProduto))
+            {
+                throw new NotFoundException("Tipo Produto não existente");
             }
 
             try

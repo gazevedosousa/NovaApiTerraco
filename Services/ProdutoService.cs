@@ -65,46 +65,29 @@ namespace TerracoDaCida.Services
 
         public async Task<ApiResponse<bool>> EditaProduto(int coProduto, decimal novoVrProduto)
         {
-            Produto? produto = await _produtoRepository.BuscarProduto(coProduto);
 
-            if (produto != null)
+            if (await _produtoRepository.EditarProduto(coProduto, novoVrProduto))
             {
-                if (await _produtoRepository.EditarProduto(coProduto, novoVrProduto))
-                {
-                    _logger.LogInformation($"Produto editado com sucesso - {produto.NoProduto}");
-                    return ApiResponse<bool>.SuccessOk(true);
-                }
-                else
-                {
-                    return ApiResponse<bool>.Error($"Erro ao editar Produto. coProduto: {coProduto}");
-                }
+                _logger.LogInformation($"Produto editado com sucesso - {coProduto}");
+                return ApiResponse<bool>.SuccessOk(true);
             }
             else
             {
-                return ApiResponse<bool>.Error($"Produto não existente. coProduto: {coProduto}");
+                return ApiResponse<bool>.Error($"Erro ao editar Produto. coProduto: {coProduto}");
             }
 
         }
 
         public async Task<ApiResponse<bool>> ExcluiProduto(int coProduto)
         {
-            Produto? produto = await _produtoRepository.BuscarProduto(coProduto);
-
-            if (produto != null)
+            if (await _produtoRepository.ExcluirProduto(coProduto))
             {
-                if (await _produtoRepository.ExcluirProduto(coProduto))
-                {
-                    _logger.LogInformation($"Produto excluído com sucesso - {produto.NoProduto}");
-                    return ApiResponse<bool>.NoContent(true);
-                }
-                else
-                {
-                    return ApiResponse<bool>.Error($"Erro ao excluir Produto. coProduto: {coProduto}");
-                }
+                _logger.LogInformation($"Produto excluído com sucesso - {coProduto}");
+                return ApiResponse<bool>.NoContent(true);
             }
             else
             {
-                return ApiResponse<bool>.Error($"Produto não existente. coProduto: {coProduto}");
+                return ApiResponse<bool>.Error($"Erro ao excluir Produto. coProduto: {coProduto}");
             }
         }
 
@@ -143,24 +126,20 @@ namespace TerracoDaCida.Services
 
         public async Task<ApiResponse<bool>> ExcluiTipoProduto(int coTipoProduto)
         {
-            TipoProduto? tipoProduto = await _produtoRepository.BuscarTipoProduto(coTipoProduto);
 
-            if (tipoProduto != null)
+            if (await _produtoRepository.ExcluirTipoProduto(coTipoProduto))
             {
-                if (await _produtoRepository.ExcluirTipoProduto(coTipoProduto))
-                {
-                    _logger.LogInformation($"Tipo Produto excluído com sucesso - {tipoProduto.NoTipoProduto}");
-                    return ApiResponse<bool>.NoContent(true);
-                }
-                else
-                {
-                    return ApiResponse<bool>.Error($"Erro ao excluir Tipo Produto. coTipoProduto: {coTipoProduto}");
-                }
+                _logger.LogInformation($"Tipo Produto excluído com sucesso - {coTipoProduto}");
+                return ApiResponse<bool>.NoContent(true);
             }
             else
             {
-                return ApiResponse<bool>.Error($"Tipo Produto não existente. coTipoProduto: {coTipoProduto}");
+                return ApiResponse<bool>.Error($"Erro ao excluir Tipo Produto. coTipoProduto: {coTipoProduto}");
             }
+        }
+        public async Task<bool> ExisteProduto(int coProduto)
+        {
+            return await _produtoRepository.ExisteProduto(coProduto);
         }
 
         public async Task<bool> ExisteProdutoDuplicado(string noProduto)

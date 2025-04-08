@@ -10,6 +10,7 @@ namespace TerracoDaCida.Services.Interfaces
         Task<Usuario?> BuscaUsuarioParaLogin(string noUsuario);
         Task<ApiResponse<bool>> CriaUsuario(CriaUsuarioDTO criaUsuarioDTO);
         Task<ApiResponse<bool>> ExcluiUsuario(int coUsuario);
+        Task<bool> ExisteUsuario(int coUsuario);
         Task<bool> ExisteUsuarioDuplicado(string noUsuario);
         Task<bool> ExistePerfilSolicitado(int coPerfil);
         bool UsuarioSolicitanteIgualAoDeletado(int coUsuario);

@@ -23,6 +23,8 @@ public partial class Comandum
 
     public bool Temcouvert { get; set; }
 
+    public int? QtdCouvert { get; set; }
+
     public virtual ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
 
     public virtual ICollection<Pagamento> Pagamentos { get; set; } = new List<Pagamento>();

@@ -26,6 +26,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpGet]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("buscaUsuarios")]
         public async Task<ApiResponse<List<UsuarioDTO>>> BuscaUsuarios()
         {
@@ -81,6 +82,11 @@ namespace TerracoDaCida.Controllers
             if(_usuarioService.UsuarioSolicitanteIgualAoDeletado(coUsuario))
             {
                 throw new BadRequestException("Erro ao deletar Usuario. Não é possível deletar o próprio Usuário");
+            }
+
+            if (!await _usuarioService.ExisteUsuario(coUsuario))
+            {
+                throw new NotFoundException("Usuário não existente");
             }
 
             try
