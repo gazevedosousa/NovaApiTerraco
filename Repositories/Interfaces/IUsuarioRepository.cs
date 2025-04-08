@@ -8,6 +8,7 @@ namespace TerracoDaCida.Repositories.Interfaces
         Task<List<Usuario>> BuscarUsuarios();
         Task<Usuario?> BuscarUsuario(int coUsuario);
         Task<Usuario?> BuscarUsuarioPorNome(string noUsuario);
+        Task<bool> ExisteUsuario(int coUsuario);
         Task<bool> ExisteUsuarioDuplicado(string noUsuario);
         Task<bool> ExistePerfilSolicitado(int coPerfil);
         Task<bool> CriarUsuario(Usuario usuario);

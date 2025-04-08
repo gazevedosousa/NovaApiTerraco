@@ -83,6 +83,15 @@ namespace TerracoDaCida.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> ExisteProduto(int coProduto)
+        {
+            return await _dbLeitura.Produtos
+                .Include(p => p.CoTipoProdutoNavigation)
+                .Where(p => p.CoProduto == coProduto)
+                .Where(p => p.DhExclusao == null)
+                .AnyAsync();
+        }
+
         public async Task<bool> ExisteVinculoTipoProduto(int coTipoProduto)
         {
             return await _dbLeitura.Produtos

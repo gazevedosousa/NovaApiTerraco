@@ -60,6 +60,7 @@ public abstract class DbContextBase<T> : DbContext
             entity.Property(e => e.NoComanda)
                 .HasColumnType("character varying")
                 .HasColumnName("no_comanda");
+            entity.Property(e => e.QtdCouvert).HasColumnName("qtd_couvert");
             entity.Property(e => e.Temcouvert).HasColumnName("temcouvert");
             entity.Property(e => e.Temdezporcento).HasColumnName("temdezporcento");
             entity.Property(e => e.Valordesconto).HasColumnName("valordesconto");
@@ -91,6 +92,7 @@ public abstract class DbContextBase<T> : DbContext
                 .HasColumnName("dh_criacao");
             entity.Property(e => e.QtdLancamento).HasColumnName("qtd_lancamento");
             entity.Property(e => e.VrLancamento).HasColumnName("vr_lancamento");
+            entity.Property(e => e.VrUnitario).HasColumnName("vr_unitario");
 
             entity.HasOne(d => d.CoComandaNavigation).WithMany(p => p.Lancamentos)
                 .HasForeignKey(d => d.CoComanda)

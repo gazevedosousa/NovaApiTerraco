@@ -31,6 +31,8 @@ namespace TerracoDaCida.Repositories
             return await _dbLeitura.Comanda
                 .Where(c => c.CoComanda == coComanda)
                 .Include(c => c.Lancamentos)
+                .ThenInclude(l => l.CoProdutoNavigation)
+                .ThenInclude(p => p.CoTipoProdutoNavigation)
                 .Include(c => c.Pagamentos)
                 .FirstOrDefaultAsync();
         }
@@ -39,6 +41,59 @@ namespace TerracoDaCida.Repositories
         {
             await _dbEscrita.AddAsync(comanda);
             return await SaveChangesAsync();
+        }
+
+        public async Task<bool> AlterarComanda(Comandum comanda, AlteraComandaDTO alteraComandaDTO)
+        {
+            var query = _dbEscrita.Comanda
+                .Where(c => c.CoComanda == alteraComandaDTO.Codigo);
+
+            int totalAtualizacoes = 0;
+            bool atualizouDezPorCento = false;
+
+            if(alteraComandaDTO.AlteraDezPorCento)
+            {
+                totalAtualizacoes += await query.ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.Temdezporcento, c => !c.Temdezporcento));
+
+                if(totalAtualizacoes != 1)
+                {
+                    return false;
+                }
+                
+                atualizouDezPorCento = true;
+            }
+
+            if (alteraComandaDTO.AlteraCouvert)
+            {
+                int? qntCouvert = null;
+
+                if(!comanda.Temcouvert)
+                {
+                    qntCouvert = alteraComandaDTO.QtdCouvert;
+                }
+
+                totalAtualizacoes += await query.ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.Temcouvert, c => !c.Temcouvert)
+                   .SetProperty(c => c.QtdCouvert, qntCouvert));
+
+                if(atualizouDezPorCento)
+                {
+                    if(totalAtualizacoes != 2)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (totalAtualizacoes != 1)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public async Task<bool> ExisteComanda(int coComanda)

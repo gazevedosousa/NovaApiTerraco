@@ -22,6 +22,10 @@ namespace TerracoDaCida.DTO
         public decimal ValorDezPorCento { get; set; }
         [JsonPropertyName("valorCouvert")]
         public decimal ValorCouvert { get; set; }
+        [JsonPropertyName("qtdCouvert")]
+        public int? QtdCouvert { get; set; }
+        [JsonPropertyName("valorTotalCouvert")]
+        public decimal ValorTotalCouvert { get; set; }
         [JsonPropertyName("valorPagamentos")]
         public decimal ValorPagamentos{ get; set; }
         [JsonPropertyName("valorDescontos")]

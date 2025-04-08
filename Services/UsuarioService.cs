@@ -89,24 +89,21 @@ namespace TerracoDaCida.Services
 
         public async Task<ApiResponse<bool>> ExcluiUsuario(int coUsuario)
         {
-            Usuario? usuario = await _usuarioRepository.BuscarUsuario(coUsuario);
-
-            if (usuario != null)
+            if (await _usuarioRepository.ExcluirUsuario(coUsuario))
             {
-                if (await _usuarioRepository.ExcluirUsuario(coUsuario))
-                {
-                    _logger.LogInformation($"Usuário excluído com sucesso - {usuario.NoUsuario}");
-                    return ApiResponse<bool>.NoContent(true);
-                }
-                else
-                {
-                    return ApiResponse<bool>.Error($"Erro ao excluir Usuário. coTipoProduto: {coUsuario}");
-                }
+                _logger.LogInformation($"Usuário excluído com sucesso - {coUsuario}");
+                return ApiResponse<bool>.NoContent(true);
             }
             else
             {
-                return ApiResponse<bool>.Error($"Usuário não existente. coTipoProduto: {coUsuario}");
+                return ApiResponse<bool>.Error($"Erro ao excluir Usuário. coUsuario: {coUsuario}");
             }
+            
+        }
+
+        public async Task<bool> ExisteUsuario(int coUsuario)
+        {
+            return await _usuarioRepository.ExisteUsuario(coUsuario);
         }
 
         public async Task<bool> ExisteUsuarioDuplicado(string noUsuario)

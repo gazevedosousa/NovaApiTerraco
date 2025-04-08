@@ -41,6 +41,13 @@ namespace TerracoDaCida.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> ExisteUsuario(int coUsuario)
+        {
+            return await _dbLeitura.Usuarios
+                .Where(u => u.CoUsuario == coUsuario)
+                .AnyAsync();
+        }
+
         public async Task<bool> ExisteUsuarioDuplicado(string noUsuario)
         {
             return await _dbLeitura.Usuarios

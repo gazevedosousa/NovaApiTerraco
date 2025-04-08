@@ -71,6 +71,8 @@ builder.Services.AddScoped<IComandaService, ComandaService>();
 builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
 builder.Services.AddScoped<ICouvertService, CouvertService>();
 builder.Services.AddScoped<ICouvertRepository, CouvertRepository>();
+builder.Services.AddScoped<ILancamentoService, LancamentoService>();
+builder.Services.AddScoped<ILancamentoRepository, LancamentoRepository>();
 
 //Contexto de Banco de Dados
 builder.Services.AddDbContext<DbEscrita>(

@@ -8,6 +8,7 @@ namespace TerracoDaCida.Repositories.Interfaces
         Task<List<Comandum>> BuscarComandas();
         Task<Comandum?> BuscarComanda(int coComanda);
         Task<bool> AbrirComanda(Comandum comanda);
+        Task<bool> AlterarComanda(Comandum comanda, AlteraComandaDTO alteraComandaDTO);
         Task<bool> ExisteComanda(int coComanda);
         Task<bool> ExisteComandaAbertaParaNomeInformado(string noComanda);
         Task<bool> SaveChangesAsync();
