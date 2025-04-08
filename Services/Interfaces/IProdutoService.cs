@@ -15,6 +15,7 @@ namespace TerracoDaCida.Services.Interfaces
         Task<ApiResponse<List<TipoProdutoDTO>>> BuscaTiposProduto();
         Task<ApiResponse<bool>> CriaTipoProduto(CriaTipoProdutoDTO criaTipoProdutoDTO);
         Task<ApiResponse<bool>> ExcluiTipoProduto(int coTipoProduto);
+        Task<bool> ExisteProduto(int coProduto);
         Task<bool> ExisteProdutoDuplicado(string noProduto);
         Task<bool> ExisteTipoProduto(int coTipoProduto);
         Task<bool> ExisteTipoProdutoDuplicado(string noTipoProduto);

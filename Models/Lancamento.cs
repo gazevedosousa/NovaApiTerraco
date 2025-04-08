@@ -17,6 +17,8 @@ public partial class Lancamento
 
     public DateTime DhCriacao { get; set; }
 
+    public decimal VrUnitario { get; set; }
+
     public virtual Comandum CoComandaNavigation { get; set; } = null!;
 
     public virtual Produto CoProdutoNavigation { get; set; } = null!;

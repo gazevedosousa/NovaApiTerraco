@@ -13,6 +13,7 @@ namespace TerracoDaCida.Repositories.Interfaces
         Task<bool> ExisteProdutoDuplicado(string noProduto);
         Task<List<TipoProduto>> BuscarTiposProduto();
         Task<TipoProduto?> BuscarTipoProduto(int coTipoProduto);
+        Task<bool> ExisteProduto(int coProduto);
         Task<bool> ExisteVinculoTipoProduto(int coTipoProduto);
         Task<bool> ExisteTipoProduto(int coTipoProduto);
         Task<bool> ExisteTipoProdutoDuplicado(string noTipoProduto);

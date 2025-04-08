@@ -11,6 +11,8 @@ namespace TerracoDaCida.DTO
         public int Comanda { get; set; }
         [JsonPropertyName("produto")]
         public ProdutoDTO Produto { get; set; } = new ProdutoDTO();
+        [JsonPropertyName("valorUnitario")]
+        public decimal ValorUnitario { get; set; }
         [JsonPropertyName("quantidade")]
         public int Quantidade { get; set; }
         [JsonPropertyName("valorLancamento")]

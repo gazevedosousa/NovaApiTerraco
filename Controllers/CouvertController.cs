@@ -26,6 +26,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpGet]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("buscaCouverts")]
         public async Task<ApiResponse<List<CouvertDTO>>> BuscaCouverts()
         {
@@ -42,6 +43,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
+        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaCouvert")]
         public async Task<IActionResult> CriaCouvert([FromBody] CriaCouvertDTO criaCouvertDTO)
         {

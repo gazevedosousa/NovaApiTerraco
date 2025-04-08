@@ -50,6 +50,11 @@ namespace TerracoDaCida.Controllers
                 throw new BadRequestException("Comanda já aberta para esse cliente");
             }
 
+            if(_comandaService.TemCouvertSemQuantidade(abreComandaDTO))
+            {
+                throw new BadRequestException("Quantidade de Couverts deve ser superior a 0");
+            }
+
             try
             {
                 var retorno = await _comandaService.AbreComanda(abreComandaDTO);
@@ -78,6 +83,7 @@ namespace TerracoDaCida.Controllers
                 throw new NotFoundException("Comanda não existente");
             }
 
+
             try
             {
                 return await _comandaService.DetalhaComanda(coComanda);
@@ -90,5 +96,38 @@ namespace TerracoDaCida.Controllers
 
         }
 
+        [HttpPatch]
+        [Route("alteraComanda")]
+        public async Task<IActionResult> AlteraComanda(AlteraComandaDTO alteraComandaDTO)
+        {
+            if (!await _comandaService.ExisteComanda(alteraComandaDTO.Codigo))
+            {
+                throw new NotFoundException("Comanda não existente");
+            }
+
+            if (await _comandaService.TemCouvertSemQuantidade(alteraComandaDTO))
+            {
+                throw new BadRequestException("Quantidade de Couverts deve ser superior a 0");
+            }
+
+            try
+            {
+                var retorno = await _comandaService.AlteraComanda(alteraComandaDTO);
+
+                if (retorno.StatusCode != StatusCodes.Status200OK)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status200OK;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+
+        }
     }
 }
