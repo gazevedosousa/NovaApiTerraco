@@ -26,6 +26,24 @@ namespace TerracoDaCida.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Comandum>> BuscarComandasAbertas()
+        {
+            return await _dbLeitura.Comanda
+                .Include(c => c.Pagamentos)
+                .Include(c => c.Lancamentos)
+                .Where(c => c.CoSituacao == 1)
+                .ToListAsync();
+        }
+
+        public async Task<List<Comandum>> BuscarComandasFechadas()
+        {
+            return await _dbLeitura.Comanda
+                .Include(c => c.Pagamentos)
+                .Include(c => c.Lancamentos)
+                .Where(c => c.CoSituacao == 2)
+                .ToListAsync();
+        }
+
         public async Task<Comandum?> BuscarComanda(int coComanda)
         {
             return await _dbLeitura.Comanda
@@ -39,6 +57,14 @@ namespace TerracoDaCida.Repositories
         {
             await _dbEscrita.AddAsync(comanda);
             return await SaveChangesAsync();
+        }
+
+        public async Task<bool> FecharComanda(int coComanda)
+        {
+            return await _dbEscrita.Comanda
+               .Where(c => c.CoComanda == coComanda)
+               .ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.CoSituacao, 2)) == 1;
         }
 
         public async Task<bool> ExisteComanda(int coComanda)

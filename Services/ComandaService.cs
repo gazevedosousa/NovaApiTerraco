@@ -7,6 +7,7 @@ using TerracoDaCida.Repositories;
 using TerracoDaCida.Repositories.Interfaces;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TerracoDaCida.Services
 {
@@ -27,6 +28,40 @@ namespace TerracoDaCida.Services
         {
 
             List<Comandum> comandas = await _comandaRepository.BuscarComandas();
+
+            List<ComandaDTO> listaComandas = comandas.Select(c => new ComandaDTO()
+            {
+                Codigo = c.CoComanda,
+                Nome = c.NoComanda,
+                Situacao = (SituacaoComandaEnum)c.CoSituacao,
+                DataAbertura = DateOnly.FromDateTime((DateTime)c.DhAbertura!),
+                DataFechamento = c.DhFechamento == null ? null : DateOnly.FromDateTime((DateTime)c.DhFechamento)
+            }).ToList();
+
+            return ApiResponse<List<ComandaDTO>>.SuccessOk(listaComandas);
+        }
+
+        public async Task<ApiResponse<List<ComandaDTO>>> BuscaComandasAbertas()
+        {
+
+            List<Comandum> comandas = await _comandaRepository.BuscarComandasAbertas();
+
+            List<ComandaDTO> listaComandas = comandas.Select(c => new ComandaDTO()
+            {
+                Codigo = c.CoComanda,
+                Nome = c.NoComanda,
+                Situacao = (SituacaoComandaEnum)c.CoSituacao,
+                DataAbertura = DateOnly.FromDateTime((DateTime)c.DhAbertura!),
+                DataFechamento = c.DhFechamento == null ? null : DateOnly.FromDateTime((DateTime)c.DhFechamento)
+            }).ToList();
+
+            return ApiResponse<List<ComandaDTO>>.SuccessOk(listaComandas);
+        }
+
+        public async Task<ApiResponse<List<ComandaDTO>>> BuscaComandasFechadas()
+        {
+
+            List<Comandum> comandas = await _comandaRepository.BuscarComandasFechadas();
 
             List<ComandaDTO> listaComandas = comandas.Select(c => new ComandaDTO()
             {
@@ -134,6 +169,11 @@ namespace TerracoDaCida.Services
             {
                 return ApiResponse<DetalhaComandaDTO>.Error($"Comanda não existente. coComanda: {coComanda}");
             }
+        }
+
+        public async Task<bool> FechaComanda(int coComanda)
+        {
+            return await _comandaRepository.FecharComanda(coComanda);
         }
 
         public async Task<bool> ExisteComanda(int coComanda)

@@ -41,6 +41,38 @@ namespace TerracoDaCida.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("buscaComandasAbertas")]
+        public async Task<ApiResponse<List<ComandaDTO>>> BuscaComandasAbertas()
+        {
+            try
+            {
+                return await _comandaService.BuscaComandasAbertas();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Route("buscaComandasFechadas")]
+        public async Task<ApiResponse<List<ComandaDTO>>> BuscaComandasFechadas()
+        {
+            try
+            {
+                return await _comandaService.BuscaComandasFechadas();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+        }
+
         [HttpPost]
         [Route("abreComanda")]
         public async Task<IActionResult> AbreComanda([FromBody] AbreComandaDTO abreComandaDTO)
