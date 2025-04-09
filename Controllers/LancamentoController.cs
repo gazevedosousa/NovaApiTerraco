@@ -10,7 +10,7 @@ using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class LancamentoController : ControllerBase

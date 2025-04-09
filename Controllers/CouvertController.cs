@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Exceptions;
+using TerracoDaCida.Identity;
 using TerracoDaCida.Models;
 using TerracoDaCida.Services;
 using TerracoDaCida.Services.Interfaces;
@@ -10,7 +11,7 @@ using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CouvertController : ControllerBase
@@ -26,7 +27,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpGet]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("buscaCouverts")]
         public async Task<ApiResponse<List<CouvertDTO>>> BuscaCouverts()
         {
@@ -43,7 +44,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaCouvert")]
         public async Task<IActionResult> CriaCouvert([FromBody] CriaCouvertDTO criaCouvertDTO)
         {
