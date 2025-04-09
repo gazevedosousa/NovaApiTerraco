@@ -49,19 +49,11 @@ namespace TerracoDaCida.Repositories
                 .Where(c => c.CoComanda == alteraComandaDTO.Codigo);
 
             int totalAtualizacoes = 0;
-            bool atualizouDezPorCento = false;
 
             if(alteraComandaDTO.AlteraDezPorCento)
             {
                 totalAtualizacoes += await query.ExecuteUpdateAsync(up => up
                    .SetProperty(c => c.Temdezporcento, c => !c.Temdezporcento));
-
-                if(totalAtualizacoes != 1)
-                {
-                    return false;
-                }
-                
-                atualizouDezPorCento = true;
             }
 
             if (alteraComandaDTO.AlteraCouvert)
@@ -76,24 +68,15 @@ namespace TerracoDaCida.Repositories
                 totalAtualizacoes += await query.ExecuteUpdateAsync(up => up
                    .SetProperty(c => c.Temcouvert, c => !c.Temcouvert)
                    .SetProperty(c => c.QtdCouvert, qntCouvert));
-
-                if(atualizouDezPorCento)
-                {
-                    if(totalAtualizacoes != 2)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (totalAtualizacoes != 1)
-                    {
-                        return false;
-                    }
-                }
             }
 
-            return true;
+            if(alteraComandaDTO.ValorDesconto.HasValue)
+            {
+                totalAtualizacoes += await query.ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.Valordesconto, alteraComandaDTO.ValorDesconto));
+            } 
+
+            return totalAtualizacoes > 0;
         }
 
         public async Task<bool> FecharComanda(int coComanda)
@@ -112,6 +95,14 @@ namespace TerracoDaCida.Repositories
                 .ExecuteUpdateAsync(up => up
                    .SetProperty(c => c.CoSituacao, 1)
                    .SetProperty(c => c.DhFechamento, (DateTime?)null)) == 1;
+        }
+
+        public async Task<bool> CadastrarTroco(int coComanda, decimal valorTroco)
+        {
+            return await _dbLeitura.Comanda
+                .Where(c => c.CoComanda == coComanda)
+                .ExecuteUpdateAsync(up => up
+                   .SetProperty(c => c.Valortroco, c => c.Valortroco + valorTroco)) == 1;
         }
 
         public async Task<bool> ExisteComanda(int coComanda)

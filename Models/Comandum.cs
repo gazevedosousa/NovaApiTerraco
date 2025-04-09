@@ -11,9 +11,9 @@ public partial class Comandum
 
     public string NoComanda { get; set; } = null!;
 
-    public decimal? Valordesconto { get; set; }
+    public decimal Valordesconto { get; set; }
 
-    public decimal? Valortroco { get; set; }
+    public decimal Valortroco { get; set; }
 
     public DateTime? DhAbertura { get; set; }
 

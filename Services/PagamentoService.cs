@@ -83,8 +83,16 @@ namespace TerracoDaCida.Services
             bool pagamentoTotal = false;
 
             decimal valorTotalComanda = await _comandaService.BuscaValorTotalComanda(criaPagamentoDTO.Comanda);
+            decimal valorPagamento = criaPagamentoDTO.ValorPagamento;
+            decimal valorTroco = 0;
 
-            if (criaPagamentoDTO.ValorPagamento == valorTotalComanda)
+            if (criaPagamentoDTO.ValorPagamento > valorTotalComanda && criaPagamentoDTO.TipoPagamento == (int)TipoPagamentoEnum.Dinheiro)
+            {
+                valorTroco = valorPagamento - valorTotalComanda;
+                valorPagamento = valorTotalComanda;
+            }
+
+            if (valorPagamento == valorTotalComanda)
             {
                 pagamentoTotal = true;
             }
@@ -100,6 +108,14 @@ namespace TerracoDaCida.Services
             if (await _pagamentoRepository.CriarPagamento(pagamento))
             {
                 _logger.LogInformation($"Pagamento realizado com sucesso - {criaPagamentoDTO.Comanda}, {criaPagamentoDTO.ValorPagamento}");
+
+                if(valorTroco > 0)
+                {
+                    if(await _comandaRepository.CadastrarTroco(criaPagamentoDTO.Comanda, valorTroco))
+                    {
+                        _logger.LogInformation($"Troco cadastrado com sucesso - {criaPagamentoDTO.Comanda}");
+                    }
+                }
 
                 if (pagamentoTotal)
                 {
@@ -147,7 +163,7 @@ namespace TerracoDaCida.Services
         {
             decimal valorTotalComanda = await _comandaService.BuscaValorTotalComanda(criaPagamentoDTO.Comanda);
 
-            if (criaPagamentoDTO.ValorPagamento > valorTotalComanda)
+            if (criaPagamentoDTO.ValorPagamento > valorTotalComanda && criaPagamentoDTO.TipoPagamento != (int)TipoPagamentoEnum.Dinheiro)
             {
                 return false;
             }

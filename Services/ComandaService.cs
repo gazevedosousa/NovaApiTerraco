@@ -52,6 +52,8 @@ namespace TerracoDaCida.Services
                 Temdezporcento = abreComandaDTO.TemDezPorCento,
                 Temcouvert = abreComandaDTO.TemCouvert,
                 QtdCouvert = abreComandaDTO.QtdCouvert,
+                Valordesconto = 0,
+                Valortroco = 0,
                 DhAbertura = new DateTime().GetDataAtual()
             };
 
@@ -114,8 +116,8 @@ namespace TerracoDaCida.Services
                 decimal valorLancamentos = lancamentos.Sum(l => l.ValorLancamento);
                 decimal valorDezPorCento = comanda.Temdezporcento ? valorLancamentos * (decimal)0.1 : 0;
                 decimal valorPagamentos = pagamentos.Sum(p => p.ValorPagamento);
-                decimal valorDesconto = comanda.Valordesconto.HasValue ? (decimal)comanda.Valordesconto : 0;
-                decimal valorTroco = comanda.Valortroco.HasValue ? (decimal)comanda.Valortroco : 0;
+                decimal valorDesconto = comanda.Valordesconto;
+                decimal valorTroco = comanda.Valortroco;
 
                 decimal valorTotalComanda = CalculaValorTotalComanda(
                     valorLancamentos, valorPagamentos, valorDezPorCento, valorTotalCouvert, valorDesconto, valorTroco);
@@ -195,6 +197,7 @@ namespace TerracoDaCida.Services
                         Codigo = p.CoPagamento,
                         Comanda = coComanda,
                         ValorPagamento = p.VrPagamento,
+                        TipoPagamento = (TipoPagamentoEnum)p.CoTipoPagamento,
                         DataPagamento = DateOnly.FromDateTime(p.DhCriacao)
                     }).ToList();
 
@@ -211,8 +214,8 @@ namespace TerracoDaCida.Services
                 decimal valorLancamentos = lancamentos.Sum(l => l.ValorLancamento);
                 decimal valorDezPorCento = comanda.Temdezporcento ? valorLancamentos * (decimal)0.1 : 0;
                 decimal valorPagamentos = pagamentos.Sum(p => p.ValorPagamento);
-                decimal valorDesconto = comanda.Valordesconto.HasValue ? (decimal)comanda.Valordesconto : 0;
-                decimal valorTroco = comanda.Valortroco.HasValue ? (decimal)comanda.Valortroco : 0;
+                decimal valorDesconto = comanda.Valordesconto;
+                decimal valorTroco = comanda.Valortroco;
 
                 return CalculaValorTotalComanda(
                     valorLancamentos, valorPagamentos, valorDezPorCento, valorTotalCouvert, valorDesconto, valorTroco);
@@ -269,6 +272,28 @@ namespace TerracoDaCida.Services
             return await _comandaRepository.ExisteComandaAbertaParaNomeInformado(noComanda);
         }
 
+        public bool ExisteAlgumaAtualizacao(AlteraComandaDTO alteraComandaDTO)
+        {
+            if(!alteraComandaDTO.AlteraDezPorCento && !alteraComandaDTO.AlteraCouvert && !alteraComandaDTO.ValorDesconto.HasValue)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ExistePossibilidadeDeDesconto(AlteraComandaDTO alteraComandaDTO)
+        {
+            decimal valorTotalComanda = await BuscaValorTotalComanda(alteraComandaDTO.Codigo);
+
+            if (alteraComandaDTO.ValorDesconto > valorTotalComanda)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public bool TemCouvertSemQuantidade(AbreComandaDTO abreComandaDTO)
         {
             if (abreComandaDTO.TemCouvert)
@@ -292,6 +317,16 @@ namespace TerracoDaCida.Services
                 {
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        public bool DescontoMenorQueZero(AlteraComandaDTO alteraComandaDTO)
+        {
+            if(alteraComandaDTO.ValorDesconto < 0)
+            {
+                return true;
             }
 
             return false;

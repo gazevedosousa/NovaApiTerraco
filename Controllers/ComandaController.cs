@@ -110,9 +110,24 @@ namespace TerracoDaCida.Controllers
                 throw new BadRequestException("Comanda está paga");
             }
 
+            if(!_comandaService.ExisteAlgumaAtualizacao(alteraComandaDTO))
+            {
+                throw new BadRequestException("Nenhuma atualização a ser realizada");
+            }
+
             if (await _comandaService.TemCouvertSemQuantidade(alteraComandaDTO))
             {
                 throw new BadRequestException("Quantidade de Couverts deve ser superior a 0");
+            }
+
+            if (alteraComandaDTO.ValorDesconto.HasValue && _comandaService.DescontoMenorQueZero(alteraComandaDTO))
+            {
+                throw new BadRequestException("Desconto não pode ser negativo");
+            }
+
+            if (alteraComandaDTO.ValorDesconto.HasValue && !await _comandaService.ExistePossibilidadeDeDesconto(alteraComandaDTO))
+            {
+                throw new BadRequestException("Desconto não pode maior que o valor total da comanda");
             }
 
             try

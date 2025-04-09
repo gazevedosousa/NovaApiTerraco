@@ -18,8 +18,11 @@ namespace TerracoDaCida.Services.Interfaces
         Task<bool> ComandaJaPaga(int coComanda);
         Task<bool> ComandaPodeSerFechada(int coComanda);
         Task<bool> ExisteComandaAbertaParaNomeInformado(string noComanda);
+        bool ExisteAlgumaAtualizacao(AlteraComandaDTO alteraComandaDTO);
+        Task<bool> ExistePossibilidadeDeDesconto(AlteraComandaDTO alteraComandaDTO);
         bool TemCouvertSemQuantidade(AbreComandaDTO abreComandaDTO);
         Task<bool> TemCouvertSemQuantidade(AlteraComandaDTO alteraComandaDTO);
+        bool DescontoMenorQueZero(AlteraComandaDTO alteraComandaDTO);
         decimal CalculaValorTotalComanda(
             decimal valorLancamentos, decimal valorPagamentos, decimal valorDezPorCento, decimal valorTotalCouvert, decimal valorDesconto, decimal valorTroco);
     }

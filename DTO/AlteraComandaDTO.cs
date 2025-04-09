@@ -13,5 +13,7 @@ namespace TerracoDaCida.DTO
         public bool AlteraCouvert { get; set; }
         [JsonPropertyName("qtdCouvert")]
         public int? QtdCouvert { get; set; }
+        [JsonPropertyName("valorDesconto")]
+        public decimal? ValorDesconto { get; set; }
     }
 }
