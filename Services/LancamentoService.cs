@@ -134,7 +134,7 @@ namespace TerracoDaCida.Services
                 }
                 else
                 {
-                    return ApiResponse<bool>.Error($"Erro ao criar Produto. DTO de entrada: {criaLancamentoDTO.ToJson()}");
+                    return ApiResponse<bool>.Error($"Erro ao criar Lançamento. DTO de entrada: {criaLancamentoDTO.ToJson()}");
                 }
             }
         }

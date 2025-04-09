@@ -105,9 +105,29 @@ namespace TerracoDaCida.Controllers
                 throw new NotFoundException("Comanda não existente");
             }
 
+            if (await _comandaService.ComandaJaPaga(alteraComandaDTO.Codigo))
+            {
+                throw new BadRequestException("Comanda está paga");
+            }
+
+            if(!_comandaService.ExisteAlgumaAtualizacao(alteraComandaDTO))
+            {
+                throw new BadRequestException("Nenhuma atualização a ser realizada");
+            }
+
             if (await _comandaService.TemCouvertSemQuantidade(alteraComandaDTO))
             {
                 throw new BadRequestException("Quantidade de Couverts deve ser superior a 0");
+            }
+
+            if (alteraComandaDTO.ValorDesconto.HasValue && _comandaService.DescontoMenorQueZero(alteraComandaDTO))
+            {
+                throw new BadRequestException("Desconto não pode ser negativo");
+            }
+
+            if (alteraComandaDTO.ValorDesconto.HasValue && !await _comandaService.ExistePossibilidadeDeDesconto(alteraComandaDTO))
+            {
+                throw new BadRequestException("Desconto não pode maior que o valor total da comanda");
             }
 
             try
@@ -128,6 +148,77 @@ namespace TerracoDaCida.Controllers
                 throw;
             }
 
+        }
+
+        [HttpPost]
+        [Route("fechaComanda")]
+        public async Task<IActionResult> FechaComanda(int coComanda)
+        {
+            if (!await _comandaService.ExisteComanda(coComanda))
+            {
+                throw new NotFoundException("Comanda não existente");
+            }
+
+            if (await _comandaService.ComandaJaPaga(coComanda))
+            {
+                throw new BadRequestException("Comanda já está paga");
+            }
+
+            if (!await _comandaService.ComandaPodeSerFechada(coComanda))
+            {
+                throw new BadRequestException("Comanda com valores pendentes");
+            }
+
+            try
+            {
+                var retorno = await _comandaService.FechaComanda(coComanda);
+
+                if (retorno.StatusCode != StatusCodes.Status200OK)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status200OK;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+        }
+
+        [HttpPost]
+        [Route("reabreComanda")]
+        public async Task<IActionResult> ReabreComanda(int coComanda)
+        {
+            if (!await _comandaService.ExisteComanda(coComanda))
+            {
+                throw new NotFoundException("Comanda não existente");
+            }
+
+            if (!await _comandaService.ComandaJaPaga(coComanda))
+            {
+                throw new BadRequestException("Comanda já está aberta");
+            }
+
+            try
+            {
+                var retorno = await _comandaService.ReabreComanda(coComanda);
+
+                if (retorno.StatusCode != StatusCodes.Status200OK)
+                {
+                    throw new BadRequestException(retorno.ErrorMessage!);
+                }
+
+                Response.StatusCode = StatusCodes.Status200OK;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
     }
 }

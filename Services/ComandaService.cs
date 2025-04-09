@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Enums;
+using TerracoDaCida.Exceptions;
 using TerracoDaCida.Models;
 using TerracoDaCida.Repositories;
 using TerracoDaCida.Repositories.Interfaces;
 using TerracoDaCida.Services.Interfaces;
 using TerracoDaCida.Util;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TerracoDaCida.Services
 {
@@ -50,6 +52,8 @@ namespace TerracoDaCida.Services
                 Temdezporcento = abreComandaDTO.TemDezPorCento,
                 Temcouvert = abreComandaDTO.TemCouvert,
                 QtdCouvert = abreComandaDTO.QtdCouvert,
+                Valordesconto = 0,
+                Valortroco = 0,
                 DhAbertura = new DateTime().GetDataAtual()
             };
 
@@ -79,7 +83,8 @@ namespace TerracoDaCida.Services
                         {
                             Codigo = l.CoProdutoNavigation.CoProduto,
                             Produto = l.CoProdutoNavigation.NoProduto,
-                            TipoProduto = l.CoProdutoNavigation.CoTipoProdutoNavigation.NoTipoProduto
+                            TipoProduto = l.CoProdutoNavigation.CoTipoProdutoNavigation.NoTipoProduto,
+                            ValorProduto = l.CoProdutoNavigation.VrProduto
                         },
                         ValorUnitario = l.VrUnitario,
                         Quantidade = l.QtdLancamento,
@@ -94,6 +99,7 @@ namespace TerracoDaCida.Services
                         Codigo = p.CoPagamento,
                         Comanda = coComanda,
                         ValorPagamento = p.VrPagamento,
+                        TipoPagamento = (TipoPagamentoEnum)p.CoTipoPagamento,
                         DataPagamento = DateOnly.FromDateTime(p.DhCriacao)
                     }).ToList();
 
@@ -110,8 +116,8 @@ namespace TerracoDaCida.Services
                 decimal valorLancamentos = lancamentos.Sum(l => l.ValorLancamento);
                 decimal valorDezPorCento = comanda.Temdezporcento ? valorLancamentos * (decimal)0.1 : 0;
                 decimal valorPagamentos = pagamentos.Sum(p => p.ValorPagamento);
-                decimal valorDesconto = comanda.Valordesconto.HasValue ? (decimal)comanda.Valordesconto : 0;
-                decimal valorTroco = comanda.Valortroco.HasValue ? (decimal)comanda.Valortroco : 0;
+                decimal valorDesconto = comanda.Valordesconto;
+                decimal valorTroco = comanda.Valortroco;
 
                 decimal valorTotalComanda = CalculaValorTotalComanda(
                     valorLancamentos, valorPagamentos, valorDezPorCento, valorTotalCouvert, valorDesconto, valorTroco);
@@ -148,7 +154,7 @@ namespace TerracoDaCida.Services
         {
             Comandum? comanda = await _comandaRepository.BuscarComanda(alteraComandaDTO.Codigo);
 
-            if (await _comandaRepository.AlterarComanda(comanda, alteraComandaDTO))
+            if (await _comandaRepository.AlterarComanda(comanda!, alteraComandaDTO))
             {
                 _logger.LogInformation($"Comanda alterada com sucesso - {alteraComandaDTO.Codigo}");
                 return ApiResponse<bool>.SuccessOk(true);
@@ -160,14 +166,132 @@ namespace TerracoDaCida.Services
 
         }
 
+        public async Task<decimal> BuscaValorTotalComanda(int coComanda)
+        {
+            Comandum? comanda = await _comandaRepository.BuscarComanda(coComanda);
+
+            if (comanda != null)
+            {
+                List<LancamentoDTO> lancamentos = comanda.Lancamentos.Select(l =>
+                    new LancamentoDTO()
+                    {
+                        Codigo = l.CoLancamento,
+                        Comanda = coComanda,
+                        Produto = new ProdutoDTO()
+                        {
+                            Codigo = l.CoProdutoNavigation.CoProduto,
+                            Produto = l.CoProdutoNavigation.NoProduto,
+                            TipoProduto = l.CoProdutoNavigation.CoTipoProdutoNavigation.NoTipoProduto,
+                            ValorProduto = l.CoProdutoNavigation.VrProduto
+                        },
+                        ValorUnitario = l.VrUnitario,
+                        Quantidade = l.QtdLancamento,
+                        ValorLancamento = l.VrLancamento,
+                        DataLancamento = DateOnly.FromDateTime(l.DhCriacao)
+
+                    }).ToList();
+
+                List<PagamentoDTO> pagamentos = comanda.Pagamentos.Select(p =>
+                    new PagamentoDTO()
+                    {
+                        Codigo = p.CoPagamento,
+                        Comanda = coComanda,
+                        ValorPagamento = p.VrPagamento,
+                        TipoPagamento = (TipoPagamentoEnum)p.CoTipoPagamento,
+                        DataPagamento = DateOnly.FromDateTime(p.DhCriacao)
+                    }).ToList();
+
+                decimal valorCouvert = 0;
+                decimal valorTotalCouvert = 0;
+
+                if (comanda.Temcouvert)
+                {
+                    valorCouvert = await _couvertRepository.BuscarValorCouvert();
+
+                    valorTotalCouvert = valorCouvert * (int)comanda.QtdCouvert!;
+                }
+
+                decimal valorLancamentos = lancamentos.Sum(l => l.ValorLancamento);
+                decimal valorDezPorCento = comanda.Temdezporcento ? valorLancamentos * (decimal)0.1 : 0;
+                decimal valorPagamentos = pagamentos.Sum(p => p.ValorPagamento);
+                decimal valorDesconto = comanda.Valordesconto;
+                decimal valorTroco = comanda.Valortroco;
+
+                return CalculaValorTotalComanda(
+                    valorLancamentos, valorPagamentos, valorDezPorCento, valorTotalCouvert, valorDesconto, valorTroco);
+            }
+            else
+            {
+                throw new NotFoundException("Comanda não existente");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> FechaComanda(int coComanda)
+        {
+            if (await _comandaRepository.FecharComanda(coComanda))
+            {
+                _logger.LogInformation($"Comanda fechada com sucesso - {coComanda}");
+                return ApiResponse<bool>.SuccessOk(true);
+            }
+            else
+            {
+                return ApiResponse<bool>.Error($"Erro ao fechar comanda. coComanda: {coComanda}");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> ReabreComanda(int coComanda)
+        {
+            if (await _comandaRepository.ReabrirComanda(coComanda))
+            {
+                _logger.LogInformation($"Comanda reaberta com sucesso - {coComanda}");
+                return ApiResponse<bool>.SuccessOk(true);
+            }
+            else
+            {
+                return ApiResponse<bool>.Error($"Erro ao reabrir comanda. coComanda: {coComanda}");
+            }
+        }
+
         public async Task<bool> ExisteComanda(int coComanda)
         {
             return await _comandaRepository.ExisteComanda(coComanda);
         }
 
+        public async Task<bool> ComandaJaPaga(int coComanda)
+        {
+            return await _comandaRepository.ComandaJaPaga(coComanda);
+        }
+
+        public async Task<bool> ComandaPodeSerFechada(int coComanda)
+        {
+            return await BuscaValorTotalComanda(coComanda) == 0;
+        }
+
         public async Task<bool> ExisteComandaAbertaParaNomeInformado(string noComanda)
         {
             return await _comandaRepository.ExisteComandaAbertaParaNomeInformado(noComanda);
+        }
+
+        public bool ExisteAlgumaAtualizacao(AlteraComandaDTO alteraComandaDTO)
+        {
+            if(!alteraComandaDTO.AlteraDezPorCento && !alteraComandaDTO.AlteraCouvert && !alteraComandaDTO.ValorDesconto.HasValue)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ExistePossibilidadeDeDesconto(AlteraComandaDTO alteraComandaDTO)
+        {
+            decimal valorTotalComanda = await BuscaValorTotalComanda(alteraComandaDTO.Codigo);
+
+            if (alteraComandaDTO.ValorDesconto > valorTotalComanda)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool TemCouvertSemQuantidade(AbreComandaDTO abreComandaDTO)
@@ -193,6 +317,16 @@ namespace TerracoDaCida.Services
                 {
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        public bool DescontoMenorQueZero(AlteraComandaDTO alteraComandaDTO)
+        {
+            if(alteraComandaDTO.ValorDesconto < 0)
+            {
+                return true;
             }
 
             return false;
