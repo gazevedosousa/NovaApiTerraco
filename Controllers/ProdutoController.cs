@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerracoDaCida.DTO;
 using TerracoDaCida.Exceptions;
+using TerracoDaCida.Identity;
 using TerracoDaCida.Models;
 using TerracoDaCida.Services;
 using TerracoDaCida.Services.Interfaces;
@@ -10,7 +11,7 @@ using TerracoDaCida.Util;
 
 namespace TerracoDaCida.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProdutoController : ControllerBase
@@ -42,7 +43,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaProduto")]
         public async Task<IActionResult> CriaProduto([FromBody] CriaProdutoDTO criaProdutoDTO)
         {
@@ -82,7 +83,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPatch]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("editaValorProduto")]
         public async Task<IActionResult> EditaValorProduto([FromBody] EditaProdutoDTO editaProdutoDTO)
         {
@@ -117,7 +118,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpDelete]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("excluiProduto")]
         public async Task<IActionResult> ExcluiProduto(int coProduto)
         {
@@ -163,7 +164,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpPost]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("criaTipoProduto")]
         public async Task<IActionResult> CriaTipoProduto([FromBody] CriaTipoProdutoDTO criaTipoProdutoDTO)
         {
@@ -193,7 +194,7 @@ namespace TerracoDaCida.Controllers
         }
 
         [HttpDelete]
-        //[RequireClaim(IdentityData.AdminUserClaimName, "true")]
+        [RequireClaim(IdentityData.AdminUserClaimName, "true")]
         [Route("excluiTipoProduto")]
         public async Task<IActionResult> ExcluiTipoProduto(int coTipoProduto)
         {
